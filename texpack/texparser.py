@@ -75,12 +75,19 @@ class TexParser(object):
         r'\\bibliography{([^{}]+)}')
 
     def _gather_sources(self, from_dir, from_file):
+        def drop_single_line_comments(cnt):
+            return '\n'.join([
+                line for line in cnt.split('\n')
+                if not line.strip().startswith('%')
+            ])
+
         def repl_func(m):
             mode = m.group(1)
             path = m.group(2)
             if '.' not in os.path.split(path)[1]:
                 path += '.tex'
-            cnt = self._gather_sources(from_dir, path)
+            cnt = drop_single_line_comments(
+                self._gather_sources(from_dir, path))
             delim = '%' * 79
             fmt = (
                 '{delim}\n% begin {mode} file: {path}\n{delim}\n'
@@ -92,7 +99,10 @@ class TexParser(object):
 
         with codecs.open(os.path.join(from_dir, from_file), 'rb',
                          'utf-8') as f:
-            return self.INCLUDE_INPUT_PATTERN.sub(repl_func, f.read())
+            return self.INCLUDE_INPUT_PATTERN.sub(
+                repl_func, 
+                drop_single_line_comments(f.read())
+            )
 
     def _parse_figure_dirs(self, cnt):
         figure_dirs = self.FIGURE_DIRS_PATTERN.search(cnt)
