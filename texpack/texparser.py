@@ -87,11 +87,10 @@ class TexParser(object):
             path = m.group(2)
             if '.' not in os.path.split(path)[1]:
                 path += '.tex'
-            cnt = drop_single_line_comments(
-                self._gather_sources(from_dir, path))
+            cnt = self._gather_sources(from_dir, path)
             delim = '%' * 79
             fmt = (
-                '{delim}\n% begin {mode} file: {path}\n{delim}\n'
+                '\n{delim}\n% begin {mode} file: {path}\n{delim}\n'
                 '{cnt}\n{delim}\n% end {mode} file: {path}\n{delim}\n'
             )
             if mode == 'include':
