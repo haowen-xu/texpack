@@ -4,6 +4,7 @@ import re
 
 import shutil
 
+from . import __version__
 from .uniquify import Uniquify
 
 __all__ = ['TexParser']
@@ -224,6 +225,16 @@ class TexParser(object):
 
         # collect bibliography files
         cnt = self._collect_bib_files(cnt, from_dir, to_dir)
+
+        # add banner
+        cnt = '\n'.join([
+            '%' * 79,
+            '% LaTeX source files are merged via TexPack v{}'.format(__version__),
+            '% Project repo: https://github.com/haowen-xu/texpack',
+            '%' * 79,
+            '',
+            cnt
+        ])
 
         # generate the target latex file
         if not os.path.isdir(to_dir):
